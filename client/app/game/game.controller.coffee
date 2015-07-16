@@ -1,7 +1,7 @@
 'use strict'
 
 angular.module 'arenaApp'
-.controller 'GameCtrl', ($scope) ->
+.controller 'GameCtrl', ($scope, socket) ->
   $scope.message = 'Hello'
 
   preload = ->
@@ -30,10 +30,17 @@ angular.module 'arenaApp'
     leftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
     rightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
 
+    socket.syncUpdates 'player', player, (a, b, c)->
+      console.log 'a: ', a
+      console.log 'b: ', b
+      console.log 'c: ', c
+    console.log(socket)
+
   update = ->
     if leftKey.isDown
       player.x -= 4
       player.animations.play 'left'
+
     else if rightKey.isDown
       player.x += 4
       player.animations.play 'right'
@@ -48,7 +55,10 @@ angular.module 'arenaApp'
 
     if !upKey.isDown and !downKey.isDown and !leftKey.isDown and !rightKey.isDown
       player.animations.stop true
-#      player.frame = 5
+
+#    socket.socket.emit 'player:save', player
+
+
 
   render = ->
     game.debug.spriteInfo(player, 20, 32)
